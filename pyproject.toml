@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eta3"
+version = "3.0.0"
+description = "High-performance solver for eta systems in random walk analysis"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "ETA3 Contributors"}
+]
+dependencies = [
+    "numpy>=1.19.0",
+    "scipy>=1.5.0",
+    "networkx>=2.5",
+    "numba>=0.51.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "black",
+    "isort",
+    "mypy"
+]
+
+[tool.setuptools]
+packages = ["eta3"]
+package-dir = {"" = "src"}
+
+[tool.black]
+line-length = 100
+target-version = ["py37", "py38", "py39", "py310", "py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100

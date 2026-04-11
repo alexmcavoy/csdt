@@ -6,7 +6,6 @@ import eta3
 from eta3.core import compute_c_values
 from eta3.utils import create_test_graphs
 
-
 class TestEtaCore(unittest.TestCase):
 
     def setUp(self):
@@ -140,7 +139,6 @@ class TestEtaCore(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             eta3.solve_eta_system(disconnected)
-
 
 if __name__ == '__main__':
     unittest.main()

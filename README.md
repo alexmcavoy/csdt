@@ -1,6 +1,6 @@
 # eta3
 
-This is package gives methods for calculating terms of the form $\eta^{\left(m\right)}=\sum_{i,j=1}^{N}\pi_{i}p_{ij}^{\left(m\right)}\eta_{ij}$ and $\eta^{\left(m,n\right)}=\sum_{i,j,k=1}^{N}\pi_{i}p_{ij}^{\left(m\right)}p_{jk}^{\left(n\right)}\eta_{ijk}$, where $p_{ij}^{\left(m\right)}$ denotes the probability of transitioning from $i$ to $j$ in $m$ steps of a random walk on a graph, $\pi$ is the stationary distribution of this random walk, and the $\eta$ terms are defined by $\eta_{i}=0$ for $i=1,\dots ,N$,
+This is package gives methods for calculating terms of the form $\eta^{\left(m\right)}=\sum_{i,j=1}^{N}\pi_{i}p_{ij}^{\left(m\right)}\eta_{ij}$ and $\eta^{\left(m,n\right)}=\sum_{i,j,k=1}^{N}\pi_{i}p_{ij}^{\left(m\right)}p_{jk}^{\left(n\right)}\eta_{ijk}$, where $p_{ij}^{\left(m\right)}$ denotes the probability of transitioning from $i$ to $j$ in $m$ steps of a random walk on a graph, $\pi$ is the stationary distribution of this random walk, and the $\eta$ terms are defined by $\eta_{ii}=0$ for $i=1,\dots ,N$,
 
 $$\eta_{ij} = \frac{1}{2} + \frac{1}{2}\sum_{\ell =1}^{N} p_{i\ell}\eta_{\ell j} + \frac{1}{2}\sum_{\ell =1}^{N} p_{j\ell}\eta_{i\ell}$$
 

@@ -10,16 +10,13 @@ from numpy.linalg import matrix_power
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import bicgstab, gmres, spsolve
 
-
 class EtaSystemResult(TypedDict):
     eta_ij: np.ndarray
     eta_ijk: np.ndarray
     transition_matrix: np.ndarray
 
-
 SolverMethod = Literal['direct', 'gmres', 'bicgstab']
 SparseMatrix = Union[csr_matrix, np.ndarray]
-
 
 @jit(nopython=True)
 def _sort_triple(a, b, c):
@@ -28,18 +25,15 @@ def _sort_triple(a, b, c):
     if a > b: a, b = b, a
     return a, b, c
 
-
 @jit(nopython=True)
 def _count_unique(a, b, c):
     if a == b:
         return 1 if b == c else 2
     return 2 if b == c else 3
 
-
 @jit(nopython=True)
 def _get_eta_val(m, n, eta_ij_flat, N):
     return eta_ij_flat[m * N + n] if m != n else 0.0
-
 
 def _build_lookup_tables(N: int) -> Tuple[np.ndarray, Dict, np.ndarray, Dict]:
     pairs = [(i, j) for i in range(N) for j in range(i + 1, N)]
@@ -54,7 +48,6 @@ def _build_lookup_tables(N: int) -> Tuple[np.ndarray, Dict, np.ndarray, Dict]:
 
     return (np.array(pairs, dtype=np.int32), pair_lookup,
             np.array(triplets, dtype=np.int32), triplet_lookup)
-
 
 @jit(nopython=True)
 def _assemble_eta_ij_matrix(N, P, pairs_array, pair_lookup):
@@ -85,7 +78,6 @@ def _assemble_eta_ij_matrix(N, P, pairs_array, pair_lookup):
                     data.append(-0.5 * P[j, l])
 
     return np.array(rows), np.array(cols), np.array(data), rhs
-
 
 @jit(nopython=True)
 def _assemble_eta_ijk_matrix(N, P, triplets_array, triplet_lookup, eta_ij_flat):
@@ -123,7 +115,6 @@ def _assemble_eta_ijk_matrix(N, P, triplets_array, triplet_lookup, eta_ij_flat):
 
     return np.array(rows), np.array(cols), np.array(data), rhs
 
-
 def _solve_linear_system(A: csr_matrix, b: np.ndarray, method: SolverMethod = 'direct') -> np.ndarray:
     if method == 'direct':
         return spsolve(A, b)
@@ -142,13 +133,11 @@ def _solve_linear_system(A: csr_matrix, b: np.ndarray, method: SolverMethod = 'd
 
     return solution
 
-
 def _expand_eta_ij(solution_vec: np.ndarray, pairs_array: np.ndarray, N: int) -> np.ndarray:
     eta_ij = np.zeros((N, N))
     for idx, (i, j) in enumerate(pairs_array):
         eta_ij[i, j] = eta_ij[j, i] = solution_vec[idx]
     return eta_ij
-
 
 def _expand_eta_ijk(solution_vec: np.ndarray, triplets_array: np.ndarray, eta_ij: np.ndarray, N: int) -> np.ndarray:
     eta_ijk = np.zeros((N, N, N))
@@ -165,7 +154,6 @@ def _expand_eta_ijk(solution_vec: np.ndarray, triplets_array: np.ndarray, eta_ij
 
     return eta_ijk
 
-
 def _solve_eta_ij_core(
     P_dense: np.ndarray, N: int, method: SolverMethod,
     pairs_array: np.ndarray, pair_lookup: Dict,
@@ -173,7 +161,6 @@ def _solve_eta_ij_core(
     rows, cols, data, rhs = _assemble_eta_ij_matrix(N, P_dense, pairs_array, pair_lookup)
     A = csr_matrix((data, (rows, cols)), shape=(len(pairs_array), len(pairs_array)))
     return _expand_eta_ij(_solve_linear_system(A, rhs, method), pairs_array, N)
-
 
 def _solve_eta_ijk_core(
     P_dense: np.ndarray, N: int, eta_ij: np.ndarray, method: SolverMethod,
@@ -185,25 +172,21 @@ def _solve_eta_ijk_core(
     A = csr_matrix((data, (rows, cols)), shape=(len(triplets_array), len(triplets_array)))
     return _expand_eta_ijk(_solve_linear_system(A, rhs, method), triplets_array, eta_ij, N)
 
-
 def compute_transition_matrix(adj_matrix: np.ndarray, k_steps: int = 1) -> csr_matrix:
     A = csr_matrix(adj_matrix)
     degrees = np.array(A.sum(axis=1)).flatten()
     P = A.toarray() / degrees[:, np.newaxis]
     return csr_matrix(matrix_power(P, k_steps))
 
-
 def solve_eta_ij(P: SparseMatrix, N: int, method: SolverMethod = 'direct') -> np.ndarray:
     pairs_array, pair_lookup, _, _ = _build_lookup_tables(N)
     P_dense = P.toarray() if hasattr(P, 'toarray') else P
     return _solve_eta_ij_core(P_dense, N, method, pairs_array, pair_lookup)
 
-
 def solve_eta_ijk(P: SparseMatrix, N: int, eta_ij: np.ndarray, method: SolverMethod = 'direct') -> np.ndarray:
     _, _, triplets_array, triplet_lookup = _build_lookup_tables(N)
     P_dense = P.toarray() if hasattr(P, 'toarray') else P
     return _solve_eta_ijk_core(P_dense, N, eta_ij, method, triplets_array, triplet_lookup)
-
 
 def solve_eta_system(
     adj_matrix: np.ndarray,
@@ -237,13 +220,11 @@ def solve_eta_system(
         'transition_matrix': P_dense,
     }
 
-
 def compute_sum_pij_eta_ij_einsum(P: SparseMatrix, eta_ij: np.ndarray, m: int = 1) -> float:
     N = P.shape[0]
     P_dense = P.toarray() if hasattr(P, 'toarray') else P
     P_m = matrix_power(P_dense, m)
     return np.einsum('ij,ij->', P_m, eta_ij) / N
-
 
 def compute_sum_pij_pjk_eta_ijk_einsum(P: SparseMatrix, eta_ijk: np.ndarray, m: int = 1, n: int = 1) -> float:
     N = P.shape[0]
@@ -251,7 +232,6 @@ def compute_sum_pij_pjk_eta_ijk_einsum(P: SparseMatrix, eta_ijk: np.ndarray, m: 
     P_m = matrix_power(P_dense, m)
     P_n = matrix_power(P_dense, n)
     return np.einsum('ij,jk,ijk->', P_m, P_n, eta_ijk) / N
-
 
 def compute_c_values(
     network: Union[np.ndarray, nx.Graph],
@@ -274,8 +254,8 @@ def compute_c_values(
     g21 = compute_sum_pij_pjk_eta_ijk_einsum(P, eta_ijk, m=2, n=1)
 
     return {
-        'c_xx': f2 + f3 - g21,
-        'c_xy': g21 - f3,
-        'c_yx': f1 + f2 - g21,
-        'c_yy': g21 - f1,
+        'K_xx': f2 + f3 - g21,
+        'K_xy': g21 - f3,
+        'K_yx': f1 + f2 - g21,
+        'K_yy': g21 - f1,
     }

@@ -20,5 +20,5 @@ for N in [10, 20, 30, 40]:
     g11 = eta3.compute_sum_pij_pjk_eta_ijk_einsum(P, eta_ijk, m=1, n=1)
 
     print(f'\nN={N}, time={elapsed:.4f}s')
-    print(f'  f1  (sum P·eta_ij)       = {f1:.6f}')
-    print(f'  g11 (sum P·P·eta_ijk)    = {g11:.6f}')
+    print(f'sum_pij_eta_ij = {f1:.6f}')
+    print(f'um_pij_pjk_eta_ijk = {g11:.6f}')

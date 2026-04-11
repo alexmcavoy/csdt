@@ -1,7 +1,6 @@
 import networkx as nx
 import numpy as np
 
-
 def create_large_graph(graph_type, n, **kwargs):
     generators = {
         'erdos_renyi': lambda: nx.erdos_renyi_graph(n, kwargs.get('p', 0.5)),
@@ -22,7 +21,6 @@ def create_large_graph(graph_type, n, **kwargs):
             G.add_edge(list(components[i])[0], list(components[i + 1])[0])
 
     return nx.to_numpy_array(G, dtype=int)
-
 
 def create_test_graphs():
     return {

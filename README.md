@@ -33,14 +33,20 @@ eta_ij = result['eta_ij']
 eta_ijk = result['eta_ijk']
 ```
 
-## Verifying symbolic claims in the paper
+## CSDT
+
+This repository also contains scripts used to support the paper *Cooperate-stay, defect-tolerate: evolutionary robustness in repeated games on networks* by Xiaochen Wang, Alex McAvoy, Joshua B. Plotkin, and Aming Li
+
+### Verifying symbolic claims in the paper
 
 ```
 pip install sympy
 python scripts/selection_condition.py
 ```
 
-## Reproducing network calculations in the paper
+### Reproducing network calculations in the paper
+
+The networks used in the paper may be found at ```scripts/networks/``` and the calculations may be run with
 
 ```
 python scripts/sigma_for_networks.py
